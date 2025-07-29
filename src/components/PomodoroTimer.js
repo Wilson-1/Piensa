@@ -5,7 +5,7 @@ const PomodoroTimer = ({
   breakTime = 5, 
   onComplete, 
   onConfigClick,
-  onConnectESP32 
+  onConnectBluetooth 
 }) => {
   const [minutes, setMinutes] = useState(workTime);
   const [seconds, setSeconds] = useState(0);
@@ -14,7 +14,6 @@ const PomodoroTimer = ({
   const [completedPomodoros, setCompletedPomodoros] = useState(0);
   const [isAlarmPlaying, setIsAlarmPlaying] = useState(false);
 
-  // Solo una referencia de sonido para ambos eventos
   const alarmSound = useRef(new Audio('/alarma.mp3'));
 
   const toggleTimer = () => {
@@ -59,11 +58,11 @@ const PomodoroTimer = ({
               onComplete?.();
             }
           } else {
-            setMinutes(minutes - 1);
+            setMinutes(prev => prev - 1);
             setSeconds(59);
           }
         } else {
-          setSeconds(seconds - 1);
+          setSeconds(prev => prev - 1);
         }
       }, 1000);
     }
@@ -76,7 +75,6 @@ const PomodoroTimer = ({
 
   return (
     <div className="flex flex-col items-center justify-center p-6">
-      {/* Notificación de alarma */}
       {isAlarmPlaying && (
         <div className="mb-4 p-3 bg-red-100 text-red-800 rounded-lg flex items-center">
           <span className="mr-2">🔔 {mode === 'work' ? '¡Tiempo de descanso!' : '¡Volver al trabajo!'}</span>
@@ -93,7 +91,6 @@ const PomodoroTimer = ({
         </div>
       )}
 
-      {/* Círculo de progreso */}
       <div className="relative w-64 h-64 mb-8">
         <svg className="w-full h-full" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="45" fill="none" stroke="#f3f4f6" strokeWidth="8" />
@@ -122,7 +119,6 @@ const PomodoroTimer = ({
         </div>
       </div>
 
-      {/* Botones de control */}
       <div className="flex gap-4">
         <button 
           onClick={toggleTimer}
@@ -138,7 +134,6 @@ const PomodoroTimer = ({
         </button>
       </div>
 
-      {/* Botones adicionales */}
       <div className="flex gap-4 mt-6">
         <button 
           onClick={onConfigClick}
@@ -147,14 +142,13 @@ const PomodoroTimer = ({
           ⚙️ Configurar
         </button>
         <button 
-          onClick={onConnectESP32}
+          onClick={onConnectBluetooth}
           className="px-4 py-2 bg-gray-200 rounded-full text-sm font-medium hover:bg-gray-300 transition-colors"
         >
-          📶 Conectar ESP32
+          🔌 Conectar Bluetooth
         </button>
       </div>
 
-      {/* Contador de Pomodoros */}
       <div className="mt-8 text-center">
         <p className="text-gray-600">Pomodoros completados</p>
         <p className="text-2xl font-bold text-red-600">{completedPomodoros}</p>

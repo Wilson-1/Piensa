@@ -4,13 +4,13 @@ import PomodoroInfo from './components/PomodoroInfo';
 import LoadingScreen from './components/LoadingScreen';
 import StatsScreen from './components/StatsScreen';
 import ConfigModal from './components/ConfigModal';
-import ESP32Modal from './components/ESP32Modal';
+import BluetoothModal from './components/BluetoothModal';
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentScreen, setCurrentScreen] = useState('timer');
   const [showConfig, setShowConfig] = useState(false);
-  const [showESP32, setShowESP32] = useState(false);
+  const [showBluetooth, setShowBluetooth] = useState(false);
   const [workTime, setWorkTime] = useState(25);
   const [breakTime, setBreakTime] = useState(5);
   const [stats, setStats] = useState({
@@ -41,6 +41,18 @@ const App = () => {
     }));
   };
 
+  const handleSaveConfig = (newWorkTime, newBreakTime) => {
+    setWorkTime(newWorkTime);
+    setBreakTime(newBreakTime);
+    setShowConfig(false);
+  };
+
+  const handleBluetoothSend = (message) => {
+    console.log(`Enviando por Bluetooth: ${message}`);
+    // Aquí iría la lógica real de comunicación vía Bluetooth/Web Serial
+    setShowBluetooth(false);
+  };
+
   if (isLoading) {
     return <LoadingScreen />;
   }
@@ -58,7 +70,7 @@ const App = () => {
             breakTime={breakTime}
             onComplete={handlePomodoroComplete}
             onConfigClick={() => setShowConfig(true)}
-            onConnectESP32={() => setShowESP32(true)}
+            onConnectESP32={() => setShowBluetooth(true)}
           />
         )}
         {currentScreen === 'info' && <PomodoroInfo />}
@@ -91,24 +103,15 @@ const App = () => {
       {showConfig && (
         <ConfigModal
           workTime={workTime}
-          breakTime={breakTime}
-          onSave={(newWorkTime, newBreakTime) => {
-            setWorkTime(newWorkTime);
-            setBreakTime(newBreakTime);
-            setShowConfig(false);
-          }}
+          onSave={handleSaveConfig}
           onClose={() => setShowConfig(false)}
         />
       )}
 
-      {showESP32 && (
-        <ESP32Modal
-          onClose={() => setShowESP32(false)}
-          onConnect={(ssid, password) => {
-            console.log(`Conectando ESP32 a ${ssid}...`);
-            // Aquí iría la lógica real de conexión
-            setShowESP32(false);
-          }}
+      {showBluetooth && (
+        <BluetoothModal
+          onClose={() => setShowBluetooth(false)}
+          onSend={handleBluetoothSend}
         />
       )}
     </div>
